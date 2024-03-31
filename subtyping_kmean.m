@@ -112,32 +112,6 @@ certer_mean_resort2 = squeeze(certer_mean_resort(:,2,:));
 certer_mean_resort3 = squeeze(certer_mean_resort(:,3,:));
 [val, idx] = sort(pdist2(certer_mean_resort3,[-0.28,1.22]));
 
-% figure('units','normalized','outerposition',[.2 .2 .25 .5]);
-% colormap(othercolor('Blues9'));
-% scatplot(certer_mean_resort1(idx(1:700),1), certer_mean_resort1(idx(1:700),2));
-% hold on; 
-% colormap(othercolor('Reds9'));
-% scatplot(certer_mean_resort2(idx(1:700),1), certer_mean_resort2(idx(1:700),2));
-% hold on; 
-% colormap(othercolor('Greens9'));
-% scatplot(certer_mean_resort3(idx(1:700),1), certer_mean_resort3(idx(1:700),2));
-% hold off; 
-% xlabel('Mood variate') 
-% ylabel('Anxiety variate') 
-% set(gca,'FontSize',12, 'FontName', 'Tahoma', 'FontWeight','bold');
-% minx = min(certer_mean_resort(:,:,1),[],'all');
-% maxx = max(certer_mean_resort(:,:,1),[],'all');
-% miny = min(certer_mean_resort(:,:,2),[],'all');
-% maxy = max(certer_mean_resort(:,:,2),[],'all');
-% unitx = round((maxx - minx)/4, 2);
-% unity = round((maxy - miny)/4, 2);
-% tickx = [minx minx+unitx minx+2*unitx minx+3*unitx minx+4*unitx];
-% ticky = [miny miny+unity miny+2*unity miny+3*unity miny+4*unity];
-% yticks(ticky);
-% xticks(tickx);
-% ytickformat('%.1f')
-% xtickformat('%.1f')
-
 label_stable1 = [];
 label_stable2 = [];
 label_stable3 = [];

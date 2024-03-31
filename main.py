@@ -129,9 +129,6 @@ def get_net_net_connects(connections, net_info, net_nums = 7):
     for i in range(len(nets)):
         new_conn[:,i,:] = new_conn[:,i,:] + np.mean(connections[:,net_info[nets[i]][0][0]:net_info[nets[i]][0][1],:],1)
         new_conn[:,i,:] = new_conn[:,i,:] + np.mean(connections[:,net_info[nets[i]][1][0]:net_info[nets[i]][1][1],:],1)
-    # for i in range(len(nets)):
-    #     new_conn2[i,:,:] = new_conn2[i,:,:] + np.mean(new_conn[net_info[nets[i]][0][0]:net_info[nets[i]][0][1],:,:],0)
-    #     new_conn2[i,:,:] = new_conn2[i,:,:] + np.mean(new_conn[net_info[nets[i]][1][0]:net_info[nets[i]][1][1],:,:],0)
 
     return new_conn
 #########fc pcd preprocess
@@ -149,13 +146,8 @@ net_info_shf = {'VIS': ([0,9],[50,58]), 'SMN': ([9,15],[58,66]), 'DAN': ([15,23]
 fc_2 = get_net_net_connects(fc, net_info_shf)
 ca_components = 4
 folds = 10
-# fc_components_list = [10,20,30,40,50,60,70,80,90]
-# fc_components_list = [30,50,70,100,150,200,250,300,350,400,450,500,550,600,650,700,750]
 fc_components_list = [30,40,50,60,70,80,90,100,130,150,180,200,210,220,230,240,250]
 
-# fc_components_list = [50]
-
-# fc_components = 0
 npi_components = 4
 npi_reduce_method = 'pca'
 fc_reduce_method2 = 'pca'
@@ -167,14 +159,8 @@ subsample_ratio = 0/4
 if sparsity:
     if dimension_method == 'cca':
         l1 = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
-        # l1 = [0.8]
-        # l1 = [0.9]
-        # l1 = [0.1]
 
     elif dimension_method == 'pls':
-        # l1 = [0.2,0.3,0.5,0.7,0.9]
-        # l1 = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
-        # l1 = [0.9]
         l1 = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 
 else:
@@ -183,12 +169,8 @@ else:
     elif dimension_method == 'pls':
         l1 = [0]
 
-# half_feature_ = fc_2.reshape(fc_2.shape[0],fc_2.shape[1]*fc_2.shape[2])
 half_feature_ = keep_triangle_half(fc.shape[1] * (fc.shape[1]-1)//2, fc.shape[0], fc)
 npi = npi.values
-# eng = matlab.engine.start_matlab()
-# half_feature_ = np.random.random((838,4950))
-# npi = np.random.random((838,10))
 
 if subsample:
     non_zero_id = np.where(np.sum(npi,1)!=0)[0]
@@ -200,35 +182,7 @@ if subsample:
 else:
     half_feature = half_feature_
     subsample_ratio = 0
-# sio.savemat(os.path.join(r'E:\PHD\learning\research\AD_two_modal', 'brain_fc.mat'), {'fc_feature': half_feature})
-# sio.savemat(os.path.join(r'E:\PHD\learning\research\AD_two_modal', 'NPI.mat'), {'npi_feature': npi})
-# kmeans = KMeans(n_clusters=2, random_state=0).fit(half_feature)
-# labels = kmeans.labels_
-# idex = np.where(labels == 1)[0]
-# idex2 = np.where(labels == 0)[0]
-# idex = np.r_[idex, idex2]
-# kmeans.predict([[0, 0], [12, 3]])
 
-# plt.figure(figsize =(15,15))
-# ax = plt.gca()
-# norm = mcolors.TwoSlopeNorm(vmin=half_feature.min(), vmax = half_feature.max(), vcenter=0)
-# plt.imshow(half_feature[idex], cmap = 'RdBu_r', norm=norm)
-# plt.colorbar()
-# name = 'raw_fc'
-# plt.title(name)
-# ax.set_aspect(1.0/ax.get_data_ratio(), adjustable='box')
-# scaler = StandardScaler()
-# half_feature = scaler.fit_transform(half_feature.T).T
-# plt.figure(figsize =(15,15))
-# ax = plt.gca()
-# norm = mcolors.TwoSlopeNorm(vmin=half_feature.min(), vmax = half_feature.max(), vcenter=0)
-# plt.imshow(half_feature[idex], cmap = 'RdBu_r', norm=norm)
-# plt.colorbar()
-# name = 'raw_fc'
-# plt.title(name)
-# ax.set_aspect(1.0/ax.get_data_ratio(), adjustable='box')
-
-# plt.savefig(os.path.join(te_save_path, '{}.png'.format(name)))
 if normal_transf:
     for i in range(npi.shape[-1]):
         # npi[:,i] = np.sign(npi[:,i]-np.median(npi[:,i])) * np.power(abs(npi[:,i]-np.median(npi[:,i])), 1/3)
@@ -254,8 +208,6 @@ for fc_components in fc_components_list:
         weight_npi = np.zeros((folds, npi.shape[-1], npi_components))    
         weight_fc = np.zeros((folds, half_feature_.shape[-1], fc_components)) 
             
-        # te_save_path = r'E:\PHD\learning\research\AD_two_modal\result\new\roi_roi\python\{}\10_domains\subsample_zero{}_{}\l1{}\test_npi_all_method_{}_fmri_{}_CAcomp{}_fold{}'.format(
-        #     dimension_method, subsample, subsample_ratio, c_, fc_reduce_method2, fc_components, ca_components, folds)        
         te_save_path = r'E:\PHD\learning\research\AD_two_modal\result\new\baseline\roi_roi\python\{}\10_domains\subsample_zero{}_{}\l1{}\test_method_norm_{}_npi{}_method_{}_fmri{}_CAcomp{}_fold{}'.format(
             dimension_method, subsample, subsample_ratio, c_, npi_reduce_method, npi_components, 
             fc_reduce_method2, fc_components, ca_components, folds)
@@ -275,16 +227,9 @@ for fc_components in fc_components_list:
             y_train = npi[train_index]
             y_test = npi[test_index] 
             
-            # scaler = MinMaxScaler()
-            # X_train = scaler.fit_transform(X_train)
-            # X_test = scaler.transform(X_test)   
-        
-            # if subsample:
             if fc_reduce_method2 == 't_test':
                 normal = half_feature_[zero_id[int(len(non_zero_id)*subsample_ratio):]]
-                mask = Ttest(X_train, normal)
-                # X_train = X_train[:,mask]
-                # X_test = X_test[:,mask]         
+                mask = Ttest(X_train, normal)      
                 X_train = X_train[:,mask]
                 X_test = X_test[:,mask]        
         
@@ -310,10 +255,7 @@ for fc_components in fc_components_list:
             elif fc_reduce_method2 == 'fa':
                 fmri_pca = FactorAnalysis(n_components=fc_components)
                 X_train = fmri_pca.fit_transform(X_train)
-                # var = fmri_pca.explained_variance_ratio_
                 X_test = fmri_pca.transform(X_test)
-            # else:
-            #     fc_components = 0
         
             if npi_reduce_method == 'nmf':
                 npi_reduce_model = NMF(n_components=npi_components, random_state=42)
@@ -518,29 +460,6 @@ for fc_components in fc_components_list:
                          'Apathy', 'Disinhibition', 'Irritability', 'Aberrant motor\nbehavior'])
             plt.savefig(os.path.join(te_save_path, '{}.png'.format(name)))
         
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(half_feature[:,0], shade=True)
-        # sns.rugplot(half_feature[:,0])
-        # name = 'fc_component1'
-        # plt.title(name)
-        # plt.savefig(os.path.join(te_save_path, '{}.png'.format(name)))
-        
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(half_feature[:,1], shade=True)
-        # sns.rugplot(half_feature[:,1])
-        # name = 'fc_component2'
-        # plt.title(name)
-        # plt.savefig(os.path.join(te_save_path, '{}.png'.format(name)))
-        
-        # plt.figure(figsize =(15,15))
-        # ax = plt.gca()
-        # norm = mcolors.TwoSlopeNorm(vmin=half_feature.min()-0.1, vmax = half_feature.max(), vcenter=0)
-        # plt.imshow(half_feature, cmap = 'RdBu', norm=norm)
-        # plt.colorbar()
-        # name = 'fc_after{}mapping'.format(method)
-        # plt.title(name)
-        # plt.savefig(os.path.join(te_save_path, '{}.png'.format(name)))
-        
         plt.figure(figsize =(15,15))
         ax = plt.gca()
         norm = mcolors.TwoSlopeNorm(vmin=X_train[:200,:].min()-0.1, vmax = X_train[:200,:].max(), vcenter=0)
@@ -551,19 +470,8 @@ for fc_components in fc_components_list:
         ax.set_aspect(1.0/ax.get_data_ratio(), adjustable='box')
         plt.savefig(os.path.join(te_save_path, '{}.png'.format(name)))
         
-        # plt.figure(figsize =(15,15))
-        # ax = plt.gca()
-        # norm = mcolors.TwoSlopeNorm(vmin=fmri_pca.components_[:,-200:].min()-0.1, vmax = fmri_pca.components_[:,-200:].max(), vcenter=0)
-        # plt.imshow(fmri_pca.components_[:,-200:], cmap = 'RdBu', norm=norm)
-        # plt.colorbar()
-        # name = 'fc_weights_last200fc'
-        # plt.title(name)
-        # plt.savefig(os.path.join(te_save_path, '{}.png'.format(name)))
-        
         plt.figure(figsize =(25,15))
         ax = plt.gca()
-        # norm = mcolors.TwoSlopeNorm(vmin=w_x.min(), vmax = w_x.max(), vcenter=0)
-        # plt.imshow(w_x[:100,:], cmap = 'RdBu', norm=norm)
         plt.imshow(w_x[:100,:], cmap = 'RdBu')
         plt.colorbar()
         name = 'cca_xloadings'
@@ -604,15 +512,6 @@ for fc_components in fc_components_list:
         plt.title(name)
         plt.savefig(os.path.join(te_save_path, '{}.png'.format(name)))
         
-        # plt.figure(figsize =(15,15))
-        # ax = plt.gca()
-        # norm = mcolors.TwoSlopeNorm(vmin=half_feature[:,:1000].min(), vmax = half_feature[:,:1000].max(), vcenter=0)
-        # plt.imshow(half_feature[:,:1000], cmap = 'RdBu', norm=norm)
-        # plt.colorbar()
-        # name = 'raw_first1000_fc'
-        # plt.title(name)
-        # plt.savefig(os.path.join(te_save_path, '{}.png'.format(name)))
-        
         plt.figure(figsize =(15,15))
         ax = plt.gca()
         norm = mcolors.TwoSlopeNorm(vmin=X_train_[:100,:].min(), vmax = X_train_[:100,:].max(), vcenter=0)
@@ -645,7 +544,6 @@ for fc_components in fc_components_list:
         
         plt.figure(figsize =(15,15))
         ax = plt.gca()
-        # norm = mcolors.TwoSlopeNorm(vmin=y_test_.min(), vmax = y_test_.max(), vcenter=0)
         plt.imshow(y_test_, cmap = 'RdBu')
         plt.colorbar()
         name = 'cca_y_test_transform'
@@ -686,47 +584,3 @@ for fc_components in fc_components_list:
         plt.savefig(os.path.join(te_save_path, '{}.png'.format(name)))
         
         plt.close('all')
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(npi[:,1], shade=True)
-        # sns.rugplot(npi[:,1])
-        
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(npi[:,2], shade=True)
-        # sns.rugplot(npi[:,2])
-        
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(npi[:,3], shade=True)
-        # sns.rugplot(npi[:,3])
-        
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(trans_y_tr[0,:,0], shade=True)
-        # sns.rugplot(trans_y_tr[0,:,0])
-        
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(trans_y_tr[0,:,1], shade=True)
-        # sns.rugplot(trans_y_tr[0,:,1])
-        
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(trans_y_tr[0,:,2], shade=True)
-        # sns.rugplot(trans_y_tr[0,:,2])
-        
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(trans_y_tr[0,:,3], shade=True)
-        # sns.rugplot(trans_y_tr[0,:,3])
-        
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(trans_y_te[0,:,0], shade=True)
-        # sns.rugplot(trans_y_te[0,:,0])
-        
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(trans_y_te[0,:,1], shade=True)
-        # sns.rugplot(trans_y_te[0,:,1])
-        
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(trans_y_te[0,:,2], shade=True)
-        # sns.rugplot(trans_y_te[0,:,2])
-        
-        # plt.figure(figsize =(10,10))
-        # sns.kdeplot(trans_y_te[0,:,3], shade=True)
-        # sns.rugplot(trans_y_te[0,:,3])
-        

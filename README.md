@@ -9,4 +9,4 @@ Kanhao Zhao, Hua Xie, Gregory A Fonzo, Nancy Carlisle, Ricardo S Osorio, Yu Zhan
 
 ## Implementation<br />
 Feel free to use and cite, if it is helpful
-The main.py is how to get the sCCA work in ten-fold cross validation and the visualization.py is how to visualize the sCCA related pattern.
+The main.py is how to get the sCCA work in ten-fold cross validation and the visualization.py is how to visualize the sCCA related pattern. The subtyping.m file was used to get the subtypes.
